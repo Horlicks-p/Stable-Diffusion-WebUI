@@ -1,5 +1,7 @@
 # Stable Diffusion AUTOMATIC1111 for Google Colab with Cloudflare Tunnel
-
+![Colab](https://img.shields.io/badge/Colab-Run%20Now-F9AB00?style=for-the-badge&logo=google-colab)
+![Stable Diffusion](https://img.shields.io/badge/Stable%20Diffusion-AUTOMATIC1111-blue?style=for-the-badge)
+![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-FF6A00?style=for-the-badge&logo=cloudflare)  
 基於 [TheLastBen/fast-stable-diffusion](https://github.com/TheLastBen/fast-stable-diffusion) 專案修改的 Google Colab notebook,支援透過 Cloudflare Tunnel 安全存取 AUTOMATIC1111 WebUI。
 
 ## ✨ 功能特色
@@ -19,6 +21,10 @@
 - Cloudflare 帳號(用於設定 Tunnel)
 
 ## 🚀 使用方式
+
+### 一鍵開啟 Colab 
+
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Horlicks-p/Stable-Diffusion/blob/main/Fast_Stable_Diffusion_AUTOMATIC1111(For_Cloudflare_Tunnel).ipynb)
 
 ### 1. 連接 Google Drive
 
