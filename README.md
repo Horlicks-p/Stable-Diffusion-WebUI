@@ -24,7 +24,7 @@
 
 ### 一鍵開啟 Colab 
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Horlicks-p/Stable-Diffusion/blob/main/Fast_Stable_Diffusion_AUTOMATIC1111(For_Cloudflare_Tunnel).ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Horlicks-p/Stable-Diffusion-WebUI/blob/main/Fast_Stable_Diffusion_AUTOMATIC1111(For_Cloudflare_Tunnel).ipynb)
 
 ### 1. 連接 Google Drive
 
