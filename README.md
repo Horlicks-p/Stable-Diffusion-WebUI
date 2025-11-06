@@ -107,7 +107,8 @@ gdrive/MyDrive/sd/
 - 支援自訂網域
 - 更好的安全性
 
-啟動後會顯示一個 `trycloudflare.com` 的臨時網址,可直接透過瀏覽器存取。
+可以利用Zero Trust建立自己專屬的網址，連線會更為穩定。  
+留空的話則會自動產生trycloudflare.com 的臨時網址。  
 
 ## ⚙️ 進階設定
 
