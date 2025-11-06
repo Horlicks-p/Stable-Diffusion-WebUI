@@ -116,6 +116,18 @@ gdrive/MyDrive/sd/
 可以利用Zero Trust建立自己專屬的網址，連線會更為穩定。  
 留空的話則會自動產生trycloudflare.com 的臨時網址。  
 
+方法 1：自訂網域（推薦）登入 Cloudflare Zero Trust  
+Access → Tunnels → 建立新 Tunnel  
+選擇 Cloudflared → 複製 Token  
+在 Colab 填入：use_cloudflare_tunnel = True  
+cf_token 貼上剛才的 Token  
+
+執行 → 成功後顯示：「Cloudflare Tunnel 已啟動，等『Connected』出現後，即可連到你在 Cloudflare 設定的網域」  
+
+方法 2：快速測試（免設定）留空 cf_token  
+系統自動產生 xxxx.trycloudflare.com 網址  
+適合臨時使用  
+
 ## ⚙️ 進階設定
 
 ### 自訂模型路徑
