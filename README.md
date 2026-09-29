@@ -1,205 +1,67 @@
-# Stable Diffusion AUTOMATIC1111 for Google Colab with Cloudflare Tunnel
-![Colab](https://img.shields.io/badge/Colab-Run%20Now-F9AB00?style=for-the-badge&logo=google-colab)
-![Stable Diffusion](https://img.shields.io/badge/Stable%20Diffusion-AUTOMATIC1111-blue?style=for-the-badge)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-Tunnel-FF6A00?style=for-the-badge&logo=cloudflare)  
-基於 [TheLastBen/fast-stable-diffusion](https://github.com/TheLastBen/fast-stable-diffusion) 專案修改的 Google Colab notebook,支援透過 Cloudflare Tunnel 安全存取 AUTOMATIC1111 WebUI。
+# Stable Diffusion WebUI Forge Neo on Google Colab
 
-## ✨ 功能特色
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Horlicks-p/Stable-Diffusion-WebUI/blob/main/Forge_Neo_Cloudflare_Colab.ipynb)
 
-- 🚀 快速部署 AUTOMATIC1111 Stable Diffusion WebUI 到 Google Colab
-- 💾 支援 Google Drive 整合,模型與生成圖片持久化儲存
-- 🌐 內建 Cloudflare Tunnel 支援,無需公開 IP 即可遠端存取
-- 🔐 支援帳號密碼驗證,保護你的 WebUI 介面
-- 📦 自動安裝所有必要的依賴套件
-- 🎨 支援自訂模型路徑與擴充套件安裝
-- ⚡ 使用 xFormers 優化記憶體使用
+這份 Google Colab notebook 會安裝 [Stable Diffusion WebUI Forge - Neo](https://github.com/Haoming02/sd-webui-forge-classic/tree/neo)，並透過 Cloudflare Tunnel 提供遠端存取。
 
-## 📋 系統需求
+## 主要功能
 
-- Google Colab 帳號(必須使用 Colab Pro 否則無法安裝)
-- Google Drive 空間(至少 10GB 以上)
-- Cloudflare 帳號(用於設定 Tunnel)
+- 使用 Forge Classic 的 `neo` 分支，不再安裝 AUTOMATIC1111。
+- 依照 Neo 的建議建立 Python 3.13 虛擬環境。
+- WebUI 程式與虛擬環境放在 Colab 暫存空間，避免 Google Drive 小檔案 I/O 拖慢啟動。
+- 模型、設定、擴充套件與輸出保存在 Google Drive。
+- 可直接引用舊 AUTOMATIC1111 的模型目錄，不必搬移或重複下載模型。
+- 支援 Cloudflare Quick Tunnel 與具名 Tunnel Token。
+- 支援 Gradio 帳號密碼及 WebUI API；API 預設關閉。
+- 可從 Hugging Face、Civitai、Google Drive 或一般 HTTPS 網址下載模型。
 
-## 🚀 使用方式
+## 使用方式
 
-### 一鍵開啟 Colab 
+1. 點上方 **Open in Colab**。
+2. 將執行階段切換為 GPU。
+3. 依序執行 notebook 的儲存空間、安裝、模型及啟動區塊。
+4. 啟動區塊會顯示 Cloudflare 網址；開啟網址後即可使用 Forge Neo。
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Horlicks-p/Stable-Diffusion-WebUI/blob/main/Fast_Stable_Diffusion_AUTOMATIC1111(For_Cloudflare_Tunnel).ipynb)
+第一次啟動需要下載 Python、PyTorch 與 Neo 的相依套件，之後模型、設定和輸出仍會保留在 Google Drive。Colab 每次建立新執行階段時，程式與虛擬環境會重新建立。
 
-### 1. 連接 Google Drive
+## Google Drive 目錄
 
-執行第一個程式碼區塊來掛載你的 Google Drive:
+預設資料放在：
 
-```python
-# 可選:如果使用共享雲端硬碟,請填入名稱
-Shared_Drive = ""  # 留空則使用個人 MyDrive
+```text
+MyDrive/sd/forge-neo/
+├── models/
+│   ├── Stable-diffusion/
+│   ├── Lora/
+│   ├── VAE/
+│   ├── ControlNet/
+│   └── text_encoder/
+├── extensions/
+├── output/
+├── config.json
+└── ui-config.json
 ```
 
-### 2. 安裝/更新 AUTOMATIC1111
+若你原本的模型位於 `MyDrive/sd/stable-diffusion-webui/`，在第一個設定區塊保留 `USE_LEGACY_A1111_MODELS = True`。Notebook 會加上 Neo 官方的 `--forge-ref-a1111-home` 參數，直接讀取舊目錄。
 
-執行第二個程式碼區塊來安裝或更新 Stable Diffusion WebUI:
+## Cloudflare Tunnel
 
-- 首次執行會自動下載並安裝完整的 AUTOMATIC1111 repository
-- 後續執行會更新到最新版本
-- 所有檔案都會儲存在 `gdrive/MyDrive/sd/` 目錄下
+`CF_TUNNEL_TOKEN` 留空時會建立臨時的 `trycloudflare.com` 網址。填入 Cloudflare Zero Trust Tunnel Token 時會啟動你的具名 Tunnel；請先在 Cloudflare 將該 Tunnel 的 Public Hostname 指向 `http://localhost:7860`。
 
-### 3. 安裝需求套件
+建議同時設定 `WEBUI_USER` 和 `WEBUI_PASSWORD`。臨時網址是公開網址，任何取得網址的人都能連線。啟用 API 時，同一組帳密也會套用到 API；若沒有設定帳密，notebook 會顯示警告。
 
-執行第三個程式碼區塊來安裝所有必要的依賴:
+## 模型與擴充套件
 
-- Python 套件
-- 系統依賴
-- 預訓練模型(如果尚未下載)
+Forge Neo 已內建 ControlNet，不需要安裝 `Mikubill/sd-webui-controlnet`。ControlNet 模型放在 `models/ControlNet`。
 
-### 4. 下載模型
+第三方 AUTOMATIC1111 擴充套件不一定相容 Neo。Notebook 只會安裝你在 `EXTENSION_URLS` 明確列出的 Git repository；若擴充套件造成啟動錯誤，可從 Google Drive 的 `forge-neo/extensions` 移除該目錄。
 
-在第四個程式碼區塊中可以選擇:
+## 與舊版 notebook 的差異
 
-- 從 Civitai 下載模型
-- 使用 Hugging Face 模型
-- 或使用已經下載好的本地模型
+舊版會安裝 TheLastBen 的 A1111 patch、固定舊版 Gradio/Pydantic，並覆寫 `modules/extras.py`、`modules/sd_models.py` 等 A1111 內部檔案。這些操作與 Forge Neo 不相容，已全部移除。Neo 現在自行管理相依套件與模型路徑。
 
-支援的檔案格式:
-- Safetensors (推薦)
-- Checkpoint (.ckpt)
+## 授權與來源
 
-### 5. 啟動 WebUI
-
-最後一個程式碼區塊用於啟動 Stable Diffusion WebUI:
-
-**可設定的參數:**
-
-- **Authentication** (驗證)
-  - `User`: 使用者名稱
-  - `Password`: 密碼
-  - 留空表示不啟用驗證
-
-- **Cloudflare Tunnel** (隧道設定)
-  - `Use_Cloudflare_Tunnel`: 是否使用 Cloudflare Tunnel
-  - `Tunnel_to_Region`: 選擇伺服器區域(預設:`asia`)
-
-- **Model Settings** (模型設定)
-  - `Model`: 使用的模型檔案名稱
-  - `Model_Path`: 自訂模型路徑(選填)
-  - `Vae`: VAE 模型檔案名稱(選填)
-  - `Vae_Path`: 自訂 VAE 路徑(選填)
-
-- **Extensions** (擴充功能)
-  - `ControlNet`: 是否安裝 ControlNet 擴充
-  - `Civitai_Browser`: 是否安裝 Civitai Browser+
-  - `Additional_Extensions`: 額外的擴充套件 Git URL(每行一個)
-
-## 📁 目錄結構
-
-```
-gdrive/MyDrive/sd/
-├── stable-diffusion-webui/        # AUTOMATIC1111 主程式
-│   ├── models/
-│   │   ├── Stable-diffusion/      # Checkpoint 模型
-│   │   ├── VAE/                   # VAE 模型
-│   │   ├── Lora/                  # LoRA 模型
-│   │   └── ControlNet/            # ControlNet 模型
-│   ├── extensions/                # 擴充套件
-│   ├── outputs/                   # 生成的圖片
-│   └── cache/                     # 快取檔案
-└── stablediffusion/               # 預訓練權重
-```
-
-## 🌐 Cloudflare Tunnel 設定
-
-使用 Cloudflare Tunnel 的優點:
-- 不需要 ngrok 或其他第三方服務
-- 更穩定的連線
-- 支援自訂網域
-- 更好的安全性
-
-可以利用Zero Trust建立自己專屬的網址，連線會更為穩定。  
-留空的話則會自動產生trycloudflare.com 的臨時網址。  
-
-方法 1：自訂網域（推薦）登入 Cloudflare Zero Trust  
-Access → Tunnels → 建立新 Tunnel  
-選擇 Cloudflared → 複製 Token  
-在 Colab 填入：use_cloudflare_tunnel = True  
-cf_token 貼上剛才的 Token  
-
-執行 → 成功後顯示：「Cloudflare Tunnel 已啟動，等『Connected』出現後，即可連到你在 Cloudflare 設定的網域」  
-
-方法 2：快速測試（免設定）留空 cf_token  
-系統自動產生 xxxx.trycloudflare.com 網址  
-適合臨時使用  
-
-## ⚙️ 進階設定
-
-### 自訂模型路徑
-
-```python
-Model_Path = "/content/gdrive/MyDrive/my-custom-models"
-```
-
-### 安裝額外擴充
-
-在 `Additional_Extensions` 欄位中輸入 Git repository URL:
-
-```
-https://github.com/username/extension1
-https://github.com/username/extension2
-```
-
-### 啟用 API 模式
-
-WebUI 預設會啟用 API 端點,可以透過 HTTP 請求來生成圖片。
-
-## ⚠️ 注意事項
-
-1. **Google Colab 限制**
-   - 免費版有使用時間限制
-   - 長時間無操作可能會被中斷連線
-   - 建議使用 Colab Pro 以獲得更好的體驗
-
-2. **儲存空間**
-   - 確保 Google Drive 有足夠空間
-   - 模型檔案通常需要 2-7GB
-   - 生成的圖片也會佔用空間
-
-3. **安全性**
-   - 建議設定帳號密碼驗證
-   - 不要分享你的 Cloudflare Tunnel URL
-   - 定期更改密碼
-
-4. **效能**
-   - GPU 類型會影響生成速度
-   - xFormers 可以降低記憶體使用
-   - 大尺寸圖片需要更多 VRAM
-
-## 🐛 常見問題
-
-**Q: 顯示記憶體不足錯誤?**
-A: 嘗試減少圖片尺寸或 batch size,或使用更強大的GPU。
-
-**Q: Cloudflare Tunnel 無法連線?**
-A: 重新執行啟動區塊,或檢查網路連線。
-
-**Q: 模型無法載入?**
-A: 確認模型檔案路徑正確,且檔案格式為 safetensors 或 ckpt。
-
-**Q: 擴充套件安裝失敗?**
-A: 檢查 Git URL 是否正確,或手動到 extensions 目錄安裝。
-
-## 📝 授權
-
-本專案基於 [TheLastBen/fast-stable-diffusion](https://github.com/TheLastBen/fast-stable-diffusion) 修改。
-
-AUTOMATIC1111 WebUI: [AGPL-3.0 License](https://github.com/AUTOMATIC1111/stable-diffusion-webui/blob/master/LICENSE.txt)
-
-## 🙏 致謝
-
-- [TheLastBen](https://github.com/TheLastBen) - 原始 fast-stable-diffusion 專案
-- [AUTOMATIC1111](https://github.com/AUTOMATIC1111) - Stable Diffusion WebUI
-- Stability AI - Stable Diffusion 模型
-
-## 🔗 相關連結
-
-- [AUTOMATIC1111 WebUI](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
-- [Stable Diffusion](https://github.com/Stability-AI/stablediffusion)
-- [Civitai](https://civitai.com/) - 模型分享社群
-- [Hugging Face](https://huggingface.co/) - AI 模型平台
+- 本專案：[GNU AGPL-3.0](LICENSE)
+- [Stable Diffusion WebUI Forge - Neo](https://github.com/Haoming02/sd-webui-forge-classic/tree/neo)：AGPL-3.0
+- 原始 notebook 工作流程源自 [TheLastBen/fast-stable-diffusion](https://github.com/TheLastBen/fast-stable-diffusion)
