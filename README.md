@@ -11,6 +11,7 @@
 - WebUI 程式與虛擬環境放在 Colab 暫存空間，避免 Google Drive 小檔案 I/O 拖慢啟動。
 - 模型、設定、擴充套件與輸出保存在 Google Drive。
 - 可直接引用舊 AUTOMATIC1111 的模型目錄，不必搬移或重複下載模型。
+- 預設安裝 Civitai Helper RED UPDATE，可管理模型、預覽圖與 Civitai 資料。
 - 支援 Cloudflare Quick Tunnel 與具名 Tunnel Token。
 - 支援 Gradio 帳號密碼及 WebUI API；API 預設關閉。
 - 可從 Hugging Face、Civitai、Google Drive 或一般 HTTPS 網址下載模型。
@@ -54,7 +55,9 @@ MyDrive/sd/forge-neo/
 
 Forge Neo 已內建 ControlNet，不需要安裝 `Mikubill/sd-webui-controlnet`。ControlNet 模型放在 `models/ControlNet`。
 
-第三方 AUTOMATIC1111 擴充套件不一定相容 Neo。Notebook 只會安裝你在 `EXTENSION_URLS` 明確列出的 Git repository；若擴充套件造成啟動錯誤，可從 Google Drive 的 `forge-neo/extensions` 移除該目錄。
+Notebook 預設安裝 [Civitai Helper RED UPDATE](https://github.com/Replactionap/Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE)，可用 `INSTALL_CIVITAI_HELPER` 關閉。Civitai API Key 可在 WebUI 的 Civitai Helper 設定中填入，設定會隨 `forge-neo` 資料目錄保存在 Google Drive。
+
+第三方 AUTOMATIC1111 擴充套件不一定相容 Neo。Notebook 只會另外安裝你在 `EXTENSION_URLS` 明確列出的 Git repository；若擴充套件造成啟動錯誤，可從 Google Drive 的 `forge-neo/extensions` 移除該目錄。
 
 ## 與舊版 notebook 的差異
 
