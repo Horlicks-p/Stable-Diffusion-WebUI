@@ -11,6 +11,7 @@
 - WebUI 程式與虛擬環境放在 Colab 暫存空間，避免 Google Drive 小檔案 I/O 拖慢啟動。
 - 模型、設定、擴充套件與輸出保存在 Google Drive。
 - 可直接引用舊 AUTOMATIC1111 的模型目錄，不必搬移或重複下載模型。
+- 可自動偵測或指定多個 ComfyUI 模型目錄，讓 Neo 共用 checkpoint、LoRA、VAE、ControlNet 與文字編碼器。
 - 預設安裝 Civitai Helper RED UPDATE，可管理模型、預覽圖與 Civitai 資料。
 - 支援 Cloudflare Quick Tunnel 與具名 Tunnel Token。
 - 支援 Gradio 帳號密碼及 WebUI API；API 預設關閉。
@@ -44,6 +45,18 @@ MyDrive/sd/forge-neo/
 ```
 
 若你原本的模型位於 `MyDrive/sd/stable-diffusion-webui/`，在第一個設定區塊保留 `USE_LEGACY_A1111_MODELS = True`。Notebook 會加上 Neo 官方的 `--forge-ref-a1111-home` 參數，直接讀取舊目錄。
+
+## 共用 ComfyUI 模型
+
+`AUTO_DETECT_COMFYUI = True` 會檢查常見位置，包括 `/content/ComfyUI`、`/content/comfyui`、MyDrive 根目錄及 `MyDrive/sd/ComfyUI`。
+
+其他位置可填入 `COMFYUI_PATHS`。它接受 ComfyUI 根目錄或直接指向 `models` 目錄，多個位置以逗號、分號或換行分隔，例如：
+
+```text
+/content/ComfyUI, /content/gdrive/MyDrive/AI/ComfyUI
+```
+
+Notebook 會將找到的路徑合併成暫時的 `extra_model_paths.yaml`，再用 Neo 的 `--forge-ref-comfy-yaml` 載入。模型檔案維持在原處，不會複製到 `forge-neo/models`。目前會共用 ComfyUI 的 `checkpoints`、`diffusion_models`、`unet`、`clip`、`text_encoders`、`loras`、`vae` 和 `controlnet` 目錄。
 
 ## Cloudflare Tunnel
 
