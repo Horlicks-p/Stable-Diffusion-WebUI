@@ -20,11 +20,33 @@
 ## 使用方式
 
 1. 點上方 **Open in Colab**。
-2. 將執行階段切換為 GPU。
-3. 依序執行 notebook 的儲存空間、安裝、模型及啟動區塊。
-4. 啟動區塊會顯示 Cloudflare 網址；開啟網址後即可使用 Forge Neo。
+2. 在 **執行階段 → 變更執行階段類型** 選擇 GPU（例如 T4）。
+3. 從第 1 格開始依序執行。每次重新啟動執行階段後都要從第 1 格重跑，後面的區塊會用到第 1 格建立的路徑與變數。
+4. 啟動區塊出現 `Running on local URL:  http://0.0.0.0:7860` 後，開啟 Cloudflare 網址即可使用。
+5. 要停止 WebUI 時，中斷第 5 格的執行即可，Cloudflare Tunnel 會一併關閉。
 
-第一次啟動需要下載 Python、PyTorch 與 Neo 的相依套件，之後模型、設定和輸出仍會保留在 Google Drive。Colab 每次建立新執行階段時，程式與虛擬環境會重新建立。
+第一次啟動需要下載 Python 3.13、PyTorch 與 Neo 的相依套件，可能需要數分鐘。之後模型、設定和輸出仍會保留在 Google Drive；Colab 每次建立新執行階段時，程式與虛擬環境會重新建立。
+
+### 各區塊說明
+
+| 區塊 | 用途 | 主要參數 |
+| --- | --- | --- |
+| 1. 儲存空間設定 | 掛載 Google Drive、建立資料目錄、偵測舊 A1111 與 ComfyUI 模型 | `DRIVE_FOLDER`、`SHARED_DRIVE`、`USE_LEGACY_A1111_MODELS`、`COMFYUI_PATHS` |
+| 2. 安裝或更新 Forge Neo | 下載或更新 `neo` 分支，建立 Python 3.13 venv | — |
+| 3. 下載模型（選用） | 下載單一模型到對應的 `models` 子目錄 | `MODEL_URL`、`MODEL_TYPE`、`HF_TOKEN`、`CIVITAI_TOKEN` |
+| 4. 擴充套件（選用） | 安裝或更新 Civitai Helper 及自訂擴充套件 | `INSTALL_CIVITAI_HELPER`、`EXTENSION_URLS` |
+| 5. 啟動 | 啟動 Cloudflare Tunnel 與 Forge Neo | `WEBUI_USER`、`WEBUI_PASSWORD`、`CF_TUNNEL_TOKEN`、`ENABLE_API`、`INSTALL_XFORMERS`、`EXTRA_ARGS` |
+
+`EXTRA_ARGS` 會原樣附加到 `launch.py`，可加入 Neo 支援的其他啟動參數。
+
+### 啟動記錄
+
+Forge Neo 的輸出會即時顯示在第 5 格，並同時寫入 `/content/forge-neo-launch.log`。啟動失敗時，notebook 會在最後重印結束前的輸出，方便找出錯誤原因。輸出包含啟動參數，若有設定帳密，分享記錄前請先遮掉 `--gradio-auth` 後面的內容。
+
+Notebook 啟動 Forge Neo 時會調整幾個環境變數，避免 Colab 的預設值干擾：
+
+- 設定 `VIRTUAL_ENV`、`UV_PYTHON` 並忽略 Colab 的其他 `UV_*` 設定，確保 PyTorch 等套件裝進 venv，而不是 Colab 系統 Python。
+- 將 `MPLBACKEND` 設為 `Agg`，避免 Colab 的 notebook 繪圖設定讓內建 ControlNet 載入失敗。
 
 ## Google Drive 目錄
 
@@ -71,6 +93,15 @@ Forge Neo 已內建 ControlNet，不需要安裝 `Mikubill/sd-webui-controlnet`�
 Notebook 預設安裝 [Civitai Helper RED UPDATE](https://github.com/Replactionap/Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE)，可用 `INSTALL_CIVITAI_HELPER` 關閉。Civitai API Key 可在 WebUI 的 Civitai Helper 設定中填入，設定會隨 `forge-neo` 資料目錄保存在 Google Drive。
 
 第三方 AUTOMATIC1111 擴充套件不一定相容 Neo。Notebook 只會另外安裝你在 `EXTENSION_URLS` 明確列出的 Git repository；若擴充套件造成啟動錯誤，可從 Google Drive 的 `forge-neo/extensions` 移除該目錄。
+
+## 常見問題
+
+- **`You do not have any model...`**：資料目錄中還沒有 checkpoint。這只是提示，WebUI 仍會啟動；將模型放進 `forge-neo/models/Stable-diffusion` 或用第 3 格下載後，在 WebUI 重新整理模型清單即可。
+- **`NameError: name 'Path' is not defined` 或找不到 `DATA_DIR`**：執行階段重新啟動後跳過了第 1 格，請從第 1 格依序重跑。
+- **`PyTorch is not able to access any compute device (GPU)`**：先確認執行階段是 GPU；若記錄中出現 `environment at: /usr`，代表套件裝到了系統 Python，請重新啟動執行階段並使用最新版 notebook。
+- **Cloudflare 網址打不開**：等第 5 格出現 `Running on local URL` 再連線；Quick Tunnel 網址會比 WebUI 早準備好。具名 Tunnel 請確認 Public Hostname 指向 `http://localhost:7860`。
+- **第 5 格結束後出現 `[cloudflared] ERR Connection terminated`**：這是 WebUI 停止後 notebook 關閉 Tunnel 的正常訊息。
+- **擴充套件導致錯誤**：刪除 Google Drive 中 `forge-neo/extensions` 內對應的目錄後重新啟動。
 
 ## 與舊版 notebook 的差異
 
