@@ -35,7 +35,7 @@
 | 2. 安裝或更新 Forge Neo | 下載或更新 `neo` 分支，建立 Python 3.13 venv | — |
 | 3. 下載模型（選用） | 下載單一模型到對應的 `models` 子目錄 | `MODEL_URL`、`MODEL_TYPE`、`HF_TOKEN`、`CIVITAI_TOKEN` |
 | 4. 擴充套件（選用） | 安裝或更新 Civitai Helper 及自訂擴充套件 | `INSTALL_CIVITAI_HELPER`、`EXTENSION_URLS` |
-| 5. 啟動 | 啟動 Cloudflare Tunnel 與 Forge Neo | `WEBUI_USER`、`WEBUI_PASSWORD`、`CF_TUNNEL_TOKEN`、`ENABLE_API`、`INSTALL_XFORMERS`、`EXTRA_ARGS` |
+| 5. 啟動 | 啟動 Cloudflare Tunnel 與 Forge Neo | `WEBUI_USER`、`WEBUI_PASSWORD`、`CF_TUNNEL_TOKEN`、`ENABLE_API`、`INSTALL_XFORMERS`、`EXTRA_ARGS`、`DISABLE_MMAP` |
 
 `EXTRA_ARGS` 會原樣附加到 `launch.py`，可加入 Neo 支援的其他啟動參數。
 
@@ -102,6 +102,7 @@ Notebook 預設安裝 [Civitai Helper RED UPDATE](https://github.com/Replactiona
 - **Cloudflare 網址打不開**：等第 5 格出現 `Running on local URL` 再連線；Quick Tunnel 網址會比 WebUI 早準備好。具名 Tunnel 請確認 Public Hostname 指向 `http://localhost:7860`。
 - **第 5 格結束後出現 `[cloudflared] ERR Connection terminated`**：這是 WebUI 停止後 notebook 關閉 Tunnel 的正常訊息。
 - **介面版面跑掉、按 Generate 沒反應**：用瀏覽器開發者工具查看，若 `file=style.css`、`file=javascript/*.js` 回 403，是 Gradio 只允許 `--data-dir` 底下的檔案，notebook 已加上 `--gradio-allowed-path` 指向程式目錄。記錄中若有 `failed to accept QUIC stream`，是 Tunnel 的 QUIC 連線在 Colab 上不穩定，notebook 已改用 `--protocol http2`；若有 `[Errno 107] Transport endpoint is not connected`，是 Google Drive 掛載中斷，請停止第 5 格再重跑（會自動重新掛載），仍不行就重新啟動執行階段。
+- **網頁顯示 `Could not parse server response: SyntaxError: Unexpected token '<'`**：Tunnel 斷線時 Cloudflare 回傳的是 HTML 錯誤頁。若同時出現 `[Errno 103]`／`[Errno 107]`，通常是 Neo 用 mmap 直接讀 Drive 上的模型，讓 Drive 掛載中斷；請保留 `DISABLE_MMAP = True`。
 - **擴充套件導致錯誤**：刪除 Google Drive 中 `forge-neo/extensions` 內對應的目錄後重新啟動。
 
 ## 與舊版 notebook 的差異
