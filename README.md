@@ -101,6 +101,7 @@ Notebook 預設安裝 [Civitai Helper RED UPDATE](https://github.com/Replactiona
 - **`PyTorch is not able to access any compute device (GPU)`**：先確認執行階段是 GPU；若記錄中出現 `environment at: /usr`，代表套件裝到了系統 Python，請重新啟動執行階段並使用最新版 notebook。
 - **Cloudflare 網址打不開**：等第 5 格出現 `Running on local URL` 再連線；Quick Tunnel 網址會比 WebUI 早準備好。具名 Tunnel 請確認 Public Hostname 指向 `http://localhost:7860`。
 - **第 5 格結束後出現 `[cloudflared] ERR Connection terminated`**：這是 WebUI 停止後 notebook 關閉 Tunnel 的正常訊息。
+- **介面版面跑掉、按 Generate 沒反應**：記錄中若有 `failed to accept QUIC stream`，是 Tunnel 的 QUIC 連線在 Colab 上不穩定，notebook 已改用 `--protocol http2`；若有 `[Errno 107] Transport endpoint is not connected`，是 Google Drive 掛載中斷，請停止第 5 格再重跑（會自動重新掛載），仍不行就重新啟動執行階段。
 - **擴充套件導致錯誤**：刪除 Google Drive 中 `forge-neo/extensions` 內對應的目錄後重新啟動。
 
 ## 與舊版 notebook 的差異
